@@ -9,11 +9,25 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    agent {
+        canBeResolved = true
+        canBeConsumed = true
+    }
+}
+
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation platform('org.junit:junit-bom:5.10.0')
+    implementation 'org.junit.jupiter:junit-jupiter'
+    implementation 'com.codeborne:selenide:7.15.0'
+    implementation 'org.aeonbits.owner:owner:1.0.12'
+    implementation 'io.qameta.allure:allure-junit5:2.33.0'
+    agent 'org.aspectj:aspectjweaver:1.9.25.1'
+    implementation 'com.microsoft.playwright:playwright:1.58.0'
 }
 
 test {
     useJUnitPlatform()
+    systemProperty "browser", System.getProperty("browser", "chrome")
+    jvmArgs = [ "-javaagent:${configurations.agent.singleFile}" ]
 }
