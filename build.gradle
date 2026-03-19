@@ -31,3 +31,15 @@ test {
     systemProperty "browser", System.getProperty("browser", "chrome")
     jvmArgs = [ "-javaagent:${configurations.agent.singleFile}" ]
 }
+
+tasks.register('selenideTest', Test) {
+    useJUnitPlatform {
+        includeTags 'selenide'
+    }
+}
+
+tasks.register('playwrightTest', Test) {
+    useJUnitPlatform {
+        includeTags 'playwright'
+    }
+}

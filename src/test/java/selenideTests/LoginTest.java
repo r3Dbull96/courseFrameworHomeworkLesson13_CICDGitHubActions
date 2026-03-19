@@ -1,14 +1,16 @@
 package selenideTests;
 
 import configs.TestConfig;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import selenidePOM.LoginPage;
 
 import static io.qameta.allure.Allure.step;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LoginTest {
+public class LoginTest extends BaseTest {
     @Test
+    @Tag("selenide")
     void loginTest() {
         LoginPage loginPage = new LoginPage().open();
         TestConfig config = new TestConfig();
