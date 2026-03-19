@@ -1,6 +1,7 @@
 package playwrightTests;
 
 import configs.TestConfig;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import playwrightPOM.LoginPage;
 
@@ -9,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LoginTest extends BaseTest {
     @Test
+    @Tag("playwright")
     void loginTest() {
         LoginPage loginPage = new LoginPage(page);
         TestConfig config = new TestConfig();
