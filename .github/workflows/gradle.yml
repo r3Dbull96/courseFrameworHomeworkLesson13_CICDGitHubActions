@@ -15,6 +15,9 @@ on:
 jobs:
   selenide-tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
     environment: ${{ inputs.target_env }}
 
     services:
@@ -46,8 +49,38 @@ jobs:
           CI_PASSWORD: ${{ secrets.PASSWORD }}
         run: ./gradlew selenideTest -Denv=${{ inputs.target_env }} -Dusername="$CI_USERNAME" -Dpassword="$CI_PASSWORD"
 
+
+      - name: Copy History
+        uses: actions/checkout@v2
+        if: always()
+        with:
+          ref: gh-pages
+          path: gh-pages/selenide
+
+
+      - name: Build Report
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        with:
+          allure_results: build/allure-results
+          allure_history: allure-history
+          keep_reports: 20
+
+
+      - name: Publish Report
+        if: always()
+        uses: peaceiris/actions-gh-pages@v2
+        env:
+          PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_BRANCH: gh-pages
+          PUBLISH_DIR: allure-history
+
+
   playwright-tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
     environment: ${{ inputs.target_env }}
 
     steps:
@@ -73,3 +106,28 @@ jobs:
           CI_USERNAME: ${{ secrets.LOGIN }}
           CI_PASSWORD: ${{ secrets.PASSWORD }}
         run: ./gradlew playwrightTest -Denv=${{ inputs.target_env }} -Dusername="$CI_USERNAME" -Dpassword="$CI_PASSWORD"
+
+      - name: Copy History
+        uses: actions/checkout@v2
+        if: always()
+        with:
+          ref: gh-pages
+          path: gh-pages/playwright
+
+
+      - name: Build Report
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        with:
+          allure_results: build/allure-results
+          allure_history: allure-history
+          keep_reports: 20
+
+
+      - name: Publish Report
+        if: always()
+        uses: peaceiris/actions-gh-pages@v2
+        env:
+          PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_BRANCH: gh-pages
+          PUBLISH_DIR: allure-history
