@@ -48,6 +48,17 @@ jobs:
         run: rm -rf build/allure-results
 
 
+      - name: Debug secret presence Selenide
+        run: |
+          echo "target_env=${{ inputs.target_env }}"
+          [ -n "$CI_USERNAME" ] && echo "CI_USERNAME is set" || echo "CI_USERNAME is EMPTY"
+          [ -n "$CI_PASSWORD" ] && echo "CI_PASSWORD is set" || echo "CI_PASSWORD is EMPTY"
+        env:
+          CI_USERNAME: ${{ secrets.LOGIN }}
+          CI_PASSWORD: ${{ secrets.PASSWORD }}
+
+
+
       - name: Run Selenide tests
         env:
           SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
@@ -100,6 +111,18 @@ jobs:
 
       - name: Clean old allure results
         run: rm -rf build/allure-results
+
+
+
+      - name: Debug secret presence Playwright
+        run: |
+          echo "target_env=${{ inputs.target_env }}"
+          [ -n "$CI_USERNAME" ] && echo "CI_USERNAME is set" || echo "CI_USERNAME is EMPTY"
+          [ -n "$CI_PASSWORD" ] && echo "CI_PASSWORD is set" || echo "CI_PASSWORD is EMPTY"
+        env:
+          CI_USERNAME: ${{ secrets.LOGIN }}
+          CI_PASSWORD: ${{ secrets.PASSWORD }}
+
 
 
       - name: Run Playwright tests
