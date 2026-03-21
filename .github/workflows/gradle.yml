@@ -47,50 +47,6 @@ jobs:
       - name: Clean old allure results
         run: rm -rf build/allure-results
 
-      - name: Debug Selenide inputs
-        env:
-          CI_USERNAME: ${{ secrets.TEST_LOGIN }}
-          CI_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-          HEADLESS: ${{ vars.HEADLESS }}
-        run: |
-          echo "target_env=${{ inputs.target_env }}"
-          [ -n "$CI_USERNAME" ] && echo "CI_USERNAME is set" || echo "CI_USERNAME is EMPTY"
-          [ -n "$CI_PASSWORD" ] && echo "CI_PASSWORD is set" || echo "CI_PASSWORD is EMPTY"
-          [ -n "$HEADLESS" ] && echo "HEADLESS is set to $HEADLESS" || echo "HEADLESS is EMPTY"
-
-
-      - name: Debug secret fingerprints Selenide
-        env:
-          CI_USERNAME: ${{ secrets.TEST_LOGIN }}
-          CI_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-        run: |
-          echo "USERNAME length:"
-          echo -n "$CI_USERNAME" | wc -c
-          echo "PASSWORD length:"
-          echo -n "$CI_PASSWORD" | wc -c
-          echo "USERNAME sha256:"
-          echo -n "$CI_USERNAME" | sha256sum
-          echo "PASSWORD sha256:"
-          echo -n "$CI_PASSWORD" | sha256sum
-
-
-      - name: Debug repository files Selenide
-        run: |
-          echo "ref=${{ github.ref }}"
-          echo "sha=${{ github.sha }}"
-          echo "workspace=$GITHUB_WORKSPACE"
-          pwd
-          echo "=== src/test/resources ==="
-          ls -la src/test/resources || true
-          echo "=== matched files ==="
-          find . -maxdepth 4 -type f | sort | grep "src/test/resources\|default.properties\|test.properties" || true
-
-      - name: Debug Gradle test resources Selenide
-        run: |
-          ./gradlew --no-daemon testClasses
-          echo "=== build/resources/test ==="
-          find build/resources/test -maxdepth 3 -type f | sort || true
-
       - name: Run Selenide tests
         env:
           SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
@@ -103,12 +59,6 @@ jobs:
             -Dusername="$CI_USERNAME" \
             -Dpassword="$CI_PASSWORD" \
             -Dheadless="$HEADLESS"
-
-      - name: Debug current Selenide allure results
-        if: always()
-        run: |
-          echo "=== SELENIDE build/allure-results ==="
-          find build/allure-results -type f | sort || true
 
       - name: Upload Selenide allure results
         if: always()
@@ -149,50 +99,6 @@ jobs:
       - name: Clean old allure results
         run: rm -rf build/allure-results
 
-      - name: Debug Playwright inputs
-        env:
-          CI_USERNAME: ${{ secrets.TEST_LOGIN }}
-          CI_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-          HEADLESS: ${{ vars.HEADLESS }}
-        run: |
-          echo "target_env=${{ inputs.target_env }}"
-          [ -n "$CI_USERNAME" ] && echo "CI_USERNAME is set" || echo "CI_USERNAME is EMPTY"
-          [ -n "$CI_PASSWORD" ] && echo "CI_PASSWORD is set" || echo "CI_PASSWORD is EMPTY"
-          [ -n "$HEADLESS" ] && echo "HEADLESS is set to $HEADLESS" || echo "HEADLESS is EMPTY"
-
-
-      - name: Debug secret fingerprints Playwright
-        env:
-          CI_USERNAME: ${{ secrets.TEST_LOGIN }}
-          CI_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-        run: |
-          echo "USERNAME length:"
-          echo -n "$CI_USERNAME" | wc -c
-          echo "PASSWORD length:"
-          echo -n "$CI_PASSWORD" | wc -c
-          echo "USERNAME sha256:"
-          echo -n "$CI_USERNAME" | sha256sum
-          echo "PASSWORD sha256:"
-          echo -n "$CI_PASSWORD" | sha256sum
-
-
-      - name: Debug repository files Playwright
-        run: |
-          echo "ref=${{ github.ref }}"
-          echo "sha=${{ github.sha }}"
-          echo "workspace=$GITHUB_WORKSPACE"
-          pwd
-          echo "=== src/test/resources ==="
-          ls -la src/test/resources || true
-          echo "=== matched files ==="
-          find . -maxdepth 4 -type f | sort | grep "src/test/resources\|default.properties\|test.properties" || true
-
-      - name: Debug Gradle test resources Playwright
-        run: |
-          ./gradlew --no-daemon testClasses
-          echo "=== build/resources/test ==="
-          find build/resources/test -maxdepth 3 -type f | sort || true
-
       - name: Run Playwright tests
         env:
           CI_USERNAME: ${{ secrets.TEST_LOGIN }}
@@ -204,12 +110,6 @@ jobs:
             -Dusername="$CI_USERNAME" \
             -Dpassword="$CI_PASSWORD" \
             -Dheadless="$HEADLESS"
-
-      - name: Debug current Playwright allure results
-        if: always()
-        run: |
-          echo "=== PLAYWRIGHT build/allure-results ==="
-          find build/allure-results -type f | sort || true
 
       - name: Upload Playwright allure results
         if: always()
@@ -249,13 +149,6 @@ jobs:
         with:
           name: playwright-allure-results
           path: playwright-results
-
-      - name: Debug downloaded artifacts
-        run: |
-          echo "=== SELENIDE RESULTS ==="
-          find selenide-results -type f | sort || true
-          echo "=== PLAYWRIGHT RESULTS ==="
-          find playwright-results -type f | sort || true
 
       - name: Get Allure history
         uses: actions/checkout@v4
@@ -364,11 +257,6 @@ jobs:
           </body>
           </html>
           EOF
-
-      - name: Debug publish directory
-        run: |
-          echo "=== PUBLIC FILES ==="
-          find public -type f | sort || true
 
       - name: Publish reports
         uses: peaceiris/actions-gh-pages@v4
