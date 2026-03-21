@@ -251,9 +251,10 @@ jobs:
 
       - name: Prepare publish directory
         run: |
-          mkdir -p public
+          rm -rf public
+          mkdir -p public/playwright
           cp -r selenide-history/* public/
-          cp -r playwright-history/playwright public/playwright
+          cp -r playwright-history/playwright/* public/playwright/
 
       - name: Write deployment marker
         run: |
@@ -309,4 +310,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: public
-          keep_files: true
