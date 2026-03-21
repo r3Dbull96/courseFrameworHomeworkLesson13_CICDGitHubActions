@@ -21,10 +21,7 @@ public class BaseTest {
     static void launchBrowser() {
         playwright = Playwright.create();
 
-        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
-        if (System.getenv("CI") != null) {
-            headless = true;
-        }
+        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "true"));
 
         browser = playwright.chromium().launch(
                 new BrowserType.LaunchOptions()
