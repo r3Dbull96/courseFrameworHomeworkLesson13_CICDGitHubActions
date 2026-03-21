@@ -6,6 +6,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class BaseTest {
@@ -18,15 +20,26 @@ public class BaseTest {
     @BeforeAll
     static void launchBrowser() {
         playwright = Playwright.create();
+
+        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
+        if (System.getenv("CI") != null) {
+            headless = true;
+        }
+
         browser = playwright.chromium().launch(
-                new BrowserType.LaunchOptions().setHeadless(false)
+                new BrowserType.LaunchOptions()
+                        .setHeadless(headless)
         );
     }
 
     @AfterAll
     static void closeBrowser() {
-        browser.close();
-        playwright.close();
+        if (browser != null) {
+            browser.close();
+        }
+        if (playwright != null) {
+            playwright.close();
+        }
     }
 
     @BeforeEach
@@ -41,8 +54,16 @@ public class BaseTest {
 
     @AfterEach
     void closeContext() {
-        context.tracing().stop(new Tracing.StopOptions()
-                .setPath(Paths.get("trace.zip")));
-        context.close();
+        if (context != null) {
+            try {
+                Files.createDirectories(Paths.get("build/traces"));
+                context.tracing().stop(new Tracing.StopOptions()
+                        .setPath(Path.of("build/traces/trace-" + System.nanoTime() + ".zip")));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                context.close();
+            }
+        }
     }
 }
