@@ -22,9 +22,6 @@ public class BaseTest {
         playwright = Playwright.create();
 
         boolean headless = Boolean.parseBoolean(System.getenv().getOrDefault("HEADLESS", "true"));
-        System.out.println("DEBUG PW HEADLESS = " + headless);
-        System.out.println("DEBUG PW CI = " + System.getenv("CI"));
-        System.out.println("DEBUG PW CODE VERSION = BaseTest v2");
 
         browser = playwright.chromium().launch(
                 new BrowserType.LaunchOptions()
