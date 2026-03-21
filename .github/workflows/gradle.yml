@@ -59,6 +59,21 @@ jobs:
           [ -n "$HEADLESS" ] && echo "HEADLESS is set to $HEADLESS" || echo "HEADLESS is EMPTY"
 
 
+      - name: Debug secret fingerprints Selenide
+        env:
+          CI_USERNAME: ${{ secrets.TEST_LOGIN }}
+          CI_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+        run: |
+          echo "USERNAME length:"
+          echo -n "$CI_USERNAME" | wc -c
+          echo "PASSWORD length:"
+          echo -n "$CI_PASSWORD" | wc -c
+          echo "USERNAME sha256:"
+          echo -n "$CI_USERNAME" | sha256sum
+          echo "PASSWORD sha256:"
+          echo -n "$CI_PASSWORD" | sha256sum
+
+
       - name: Debug repository files Selenide
         run: |
           echo "ref=${{ github.ref }}"
@@ -75,8 +90,6 @@ jobs:
           ./gradlew --no-daemon testClasses
           echo "=== build/resources/test ==="
           find build/resources/test -maxdepth 3 -type f | sort || true
-
-
 
       - name: Run Selenide tests
         env:
@@ -148,6 +161,21 @@ jobs:
           [ -n "$HEADLESS" ] && echo "HEADLESS is set to $HEADLESS" || echo "HEADLESS is EMPTY"
 
 
+      - name: Debug secret fingerprints Playwright
+        env:
+          CI_USERNAME: ${{ secrets.TEST_LOGIN }}
+          CI_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+        run: |
+          echo "USERNAME length:"
+          echo -n "$CI_USERNAME" | wc -c
+          echo "PASSWORD length:"
+          echo -n "$CI_PASSWORD" | wc -c
+          echo "USERNAME sha256:"
+          echo -n "$CI_USERNAME" | sha256sum
+          echo "PASSWORD sha256:"
+          echo -n "$CI_PASSWORD" | sha256sum
+
+
       - name: Debug repository files Playwright
         run: |
           echo "ref=${{ github.ref }}"
@@ -164,8 +192,6 @@ jobs:
           ./gradlew --no-daemon testClasses
           echo "=== build/resources/test ==="
           find build/resources/test -maxdepth 3 -type f | sort || true
-
-
 
       - name: Run Playwright tests
         env:
