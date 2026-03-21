@@ -21,13 +21,14 @@ public class TestConfig {
     public String getUsername() {
         return getFieldByName("username");
     }
+
     public String getPassword() {
         return getFieldByName("password");
     }
 
     private String getFieldByName(String fieldName) {
-        String field = properties.getProperty(fieldName, System.getProperty(fieldName));
-        assertNotNull(field, String.format("%s is not found ib %s.properties and not set by system properties", fieldName, env));
+        String field = System.getProperty(fieldName, properties.getProperty(fieldName));
+        assertNotNull(field, String.format("%s is not found in %s.properties and not set by system properties", fieldName, env));
         return field;
     }
 
@@ -36,9 +37,9 @@ public class TestConfig {
         try {
             testProperties.load(getClass().getClassLoader().getResourceAsStream(env + ".properties"));
         } catch (IOException e) {
-            throw  new RuntimeException(e);
+            throw new RuntimeException(e);
         } catch (Exception e) {
-            throw  new RuntimeException(String.format("Cannot open %s.properties", env));
+            throw new RuntimeException(String.format("Cannot open %s.properties", env));
         }
         return testProperties;
     }
