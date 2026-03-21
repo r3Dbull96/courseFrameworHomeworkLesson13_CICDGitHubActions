@@ -1,0 +1,2 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","7910","loginTest()","","Sat Mar 21 13:44:48 UTC 2026","failed","Sat Mar 21 13:44:56 UTC 2026","","selenideTests.LoginTest","selenideTests.LoginTest","loginTest"
