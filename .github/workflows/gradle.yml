@@ -58,6 +58,26 @@ jobs:
           [ -n "$CI_PASSWORD" ] && echo "CI_PASSWORD is set" || echo "CI_PASSWORD is EMPTY"
           [ -n "$HEADLESS" ] && echo "HEADLESS is set to $HEADLESS" || echo "HEADLESS is EMPTY"
 
+
+      - name: Debug repository files Selenide
+        run: |
+          echo "ref=${{ github.ref }}"
+          echo "sha=${{ github.sha }}"
+          echo "workspace=$GITHUB_WORKSPACE"
+          pwd
+          echo "=== src/test/resources ==="
+          ls -la src/test/resources || true
+          echo "=== matched files ==="
+          find . -maxdepth 4 -type f | sort | grep "src/test/resources\|default.properties\|test.properties" || true
+
+      - name: Debug Gradle test resources Selenide
+        run: |
+          ./gradlew --no-daemon testClasses
+          echo "=== build/resources/test ==="
+          find build/resources/test -maxdepth 3 -type f | sort || true
+
+
+
       - name: Run Selenide tests
         env:
           SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
@@ -126,6 +146,26 @@ jobs:
           [ -n "$CI_USERNAME" ] && echo "CI_USERNAME is set" || echo "CI_USERNAME is EMPTY"
           [ -n "$CI_PASSWORD" ] && echo "CI_PASSWORD is set" || echo "CI_PASSWORD is EMPTY"
           [ -n "$HEADLESS" ] && echo "HEADLESS is set to $HEADLESS" || echo "HEADLESS is EMPTY"
+
+
+      - name: Debug repository files Playwright
+        run: |
+          echo "ref=${{ github.ref }}"
+          echo "sha=${{ github.sha }}"
+          echo "workspace=$GITHUB_WORKSPACE"
+          pwd
+          echo "=== src/test/resources ==="
+          ls -la src/test/resources || true
+          echo "=== matched files ==="
+          find . -maxdepth 4 -type f | sort | grep "src/test/resources\|default.properties\|test.properties" || true
+
+      - name: Debug Gradle test resources Playwright
+        run: |
+          ./gradlew --no-daemon testClasses
+          echo "=== build/resources/test ==="
+          find build/resources/test -maxdepth 3 -type f | sort || true
+
+
 
       - name: Run Playwright tests
         env:
