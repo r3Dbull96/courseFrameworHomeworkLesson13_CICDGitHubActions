@@ -89,7 +89,7 @@ jobs:
           HEADLESS: true
           CI_USERNAME: ${{ secrets.LOGIN }}
           CI_PASSWORD: ${{ secrets.PASSWORD }}
-        run: ./gradlew --no-daemon clean playwrightTest -Denv=${{ inputs.target_env }} -Dusername="$CI_USERNAME" -Dpassword="$CI_PASSWORD"
+        run: xvfb-run ./gradlew --no-daemon clean playwrightTest -Denv=${{ inputs.target_env }} -Dusername="$CI_USERNAME" -Dpassword="$CI_PASSWORD"
 
       - name: Upload Playwright allure results
         if: always()
