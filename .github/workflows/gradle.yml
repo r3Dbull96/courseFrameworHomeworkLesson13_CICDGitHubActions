@@ -48,7 +48,7 @@ jobs:
           SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
           CI_USERNAME: ${{ secrets.LOGIN }}
           CI_PASSWORD: ${{ secrets.PASSWORD }}
-        run: ./gradlew selenideTest -Denv=${{ inputs.target_env }} -Dusername="$CI_USERNAME" -Dpassword="$CI_PASSWORD"
+        run: ./gradlew clean selenideTest -Denv=${{ inputs.target_env }} -Dusername="$CI_USERNAME" -Dpassword="$CI_PASSWORD"
 
       - name: Upload Selenide allure results
         if: always()
@@ -89,7 +89,7 @@ jobs:
           HEADLESS: true
           CI_USERNAME: ${{ secrets.LOGIN }}
           CI_PASSWORD: ${{ secrets.PASSWORD }}
-        run: ./gradlew --no-daemon playwrightTest -Denv=${{ inputs.target_env }} -Dusername="$CI_USERNAME" -Dpassword="$CI_PASSWORD"
+        run: ./gradlew --no-daemon clean playwrightTest -Denv=${{ inputs.target_env }} -Dusername="$CI_USERNAME" -Dpassword="$CI_PASSWORD"
 
       - name: Upload Playwright allure results
         if: always()
