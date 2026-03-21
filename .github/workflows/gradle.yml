@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       target_env:
-        description: 'Target environment'
+        description: Target environment
         required: true
-        default: 'default'
+        default: default
         type: choice
         options:
           - default
@@ -27,7 +27,8 @@ jobs:
           - 4444:4444
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           submodules: false
 
@@ -43,29 +44,32 @@ jobs:
       - name: Grant execute permission for Gradle
         run: chmod +x gradlew
 
-
       - name: Clean old allure results
         run: rm -rf build/allure-results
 
-
-      - name: Debug secret presence Selenide
+      - name: Debug Selenide inputs
+        env:
+          CI_USERNAME: ${{ secrets.TEST_LOGIN }}
+          CI_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          HEADLESS: ${{ vars.HEADLESS }}
         run: |
           echo "target_env=${{ inputs.target_env }}"
           [ -n "$CI_USERNAME" ] && echo "CI_USERNAME is set" || echo "CI_USERNAME is EMPTY"
           [ -n "$CI_PASSWORD" ] && echo "CI_PASSWORD is set" || echo "CI_PASSWORD is EMPTY"
-        env:
-          CI_USERNAME: ${{ secrets.LOGIN }}
-          CI_PASSWORD: ${{ secrets.PASSWORD }}
-
-
+          [ -n "$HEADLESS" ] && echo "HEADLESS is set to $HEADLESS" || echo "HEADLESS is EMPTY"
 
       - name: Run Selenide tests
         env:
           SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
-          CI_USERNAME: ${{ secrets.LOGIN }}
-          CI_PASSWORD: ${{ secrets.PASSWORD }}
-        run: ./gradlew --no-daemon clean selenideTest -Denv=${{ inputs.target_env }} -Dusername="$CI_USERNAME" -Dpassword="$CI_PASSWORD"
-
+          CI_USERNAME: ${{ secrets.TEST_LOGIN }}
+          CI_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          HEADLESS: ${{ vars.HEADLESS }}
+        run: |
+          ./gradlew --no-daemon clean selenideTest \
+            -Denv=${{ inputs.target_env }} \
+            -Dusername="$CI_USERNAME" \
+            -Dpassword="$CI_PASSWORD" \
+            -Dheadless="$HEADLESS"
 
       - name: Debug current Selenide allure results
         if: always()
@@ -89,7 +93,8 @@ jobs:
     environment: ${{ inputs.target_env }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           submodules: false
 
@@ -108,37 +113,37 @@ jobs:
       - name: Install Playwright browsers
         run: ./gradlew --no-daemon playwrightInstall
 
-
       - name: Clean old allure results
         run: rm -rf build/allure-results
 
-
-
-      - name: Debug secret presence Playwright
+      - name: Debug Playwright inputs
+        env:
+          CI_USERNAME: ${{ secrets.TEST_LOGIN }}
+          CI_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          HEADLESS: ${{ vars.HEADLESS }}
         run: |
           echo "target_env=${{ inputs.target_env }}"
           [ -n "$CI_USERNAME" ] && echo "CI_USERNAME is set" || echo "CI_USERNAME is EMPTY"
           [ -n "$CI_PASSWORD" ] && echo "CI_PASSWORD is set" || echo "CI_PASSWORD is EMPTY"
-        env:
-          CI_USERNAME: ${{ secrets.LOGIN }}
-          CI_PASSWORD: ${{ secrets.PASSWORD }}
-
-
+          [ -n "$HEADLESS" ] && echo "HEADLESS is set to $HEADLESS" || echo "HEADLESS is EMPTY"
 
       - name: Run Playwright tests
         env:
-          HEADLESS: true
-          CI_USERNAME: ${{ secrets.LOGIN }}
-          CI_PASSWORD: ${{ secrets.PASSWORD }}
-        run: xvfb-run ./gradlew --no-daemon clean playwrightTest -Denv=${{ inputs.target_env }} -Dusername="$CI_USERNAME" -Dpassword="$CI_PASSWORD"
-
+          CI_USERNAME: ${{ secrets.TEST_LOGIN }}
+          CI_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          HEADLESS: ${{ vars.HEADLESS }}
+        run: |
+          xvfb-run ./gradlew --no-daemon clean playwrightTest \
+            -Denv=${{ inputs.target_env }} \
+            -Dusername="$CI_USERNAME" \
+            -Dpassword="$CI_PASSWORD" \
+            -Dheadless="$HEADLESS"
 
       - name: Debug current Playwright allure results
         if: always()
         run: |
           echo "=== PLAYWRIGHT build/allure-results ==="
           find build/allure-results -type f | sort || true
-
 
       - name: Upload Playwright allure results
         if: always()
@@ -157,7 +162,8 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           submodules: false
 
@@ -193,8 +199,6 @@ jobs:
           path: gh-pages
           submodules: false
 
-
-
       - name: Create Selenide executor.json
         run: |
           cat > selenide-results/executor.json <<EOF
@@ -210,12 +214,6 @@ jobs:
           }
           EOF
 
-
-      - name: Debug Selenide executor.json
-        run: cat selenide-results/executor.json
-
-
-
       - name: Build Selenide Allure Report
         uses: simple-elf/allure-report-action@master
         with:
@@ -225,7 +223,6 @@ jobs:
           allure_history: selenide-history
           subfolder: selenide
           keep_reports: 20
-
 
       - name: Create Playwright executor.json
         run: |
@@ -241,12 +238,6 @@ jobs:
             "reportName": "Playwright Allure Report"
           }
           EOF
-          
-
-      - name: Debug Playwright executor.json
-        run: cat playwright-results/executor.json
-
-
 
       - name: Build Playwright Allure Report
         uses: simple-elf/allure-report-action@master
@@ -280,46 +271,14 @@ jobs:
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Allure Reports</title>
             <style>
-              body {
-                font-family: Arial, sans-serif;
-                margin: 40px;
-                background: #f7f7f7;
-                color: #222;
-              }
-              .container {
-                max-width: 800px;
-                margin: 0 auto;
-                background: white;
-                padding: 32px;
-                border-radius: 12px;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-              }
-              h1 {
-                margin-top: 0;
-              }
-              ul {
-                list-style: none;
-                padding: 0;
-              }
-              li {
-                margin: 16px 0;
-              }
-              a {
-                display: inline-block;
-                text-decoration: none;
-                color: white;
-                background: #2f67ff;
-                padding: 12px 18px;
-                border-radius: 8px;
-              }
-              a:hover {
-                background: #1f4ed8;
-              }
-              .meta {
-                margin-top: 24px;
-                color: #555;
-                font-size: 14px;
-              }
+              body { font-family: Arial, sans-serif; margin: 40px; background: #f7f7f7; color: #222; }
+              .container { max-width: 800px; margin: 0 auto; background: white; padding: 32px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+              h1 { margin-top: 0; }
+              ul { list-style: none; padding: 0; }
+              li { margin: 16px 0; }
+              a { display: inline-block; text-decoration: none; color: white; background: #2f67ff; padding: 12px 18px; border-radius: 8px; }
+              a:hover { background: #1f4ed8; }
+              .meta { margin-top: 24px; color: #555; font-size: 14px; }
             </style>
           </head>
           <body>
@@ -344,7 +303,7 @@ jobs:
           echo "=== PUBLIC FILES ==="
           find public -type f | sort || true
 
-      - name: Publish Reports
+      - name: Publish reports
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
