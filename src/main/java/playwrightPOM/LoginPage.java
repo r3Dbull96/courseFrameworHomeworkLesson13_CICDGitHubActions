@@ -16,13 +16,13 @@ public class LoginPage {
         return this;
     }
 
-    @Step("Ввести имя {0}")
+    @Step("Ввести имя")
     public LoginPage enterName(String name) {
         page.locator("#username").fill(name);
         return this;
     }
 
-    @Step("Ввести пароль {0}")
+    @Step("Ввести пароль")
     public LoginPage enterPassword(String password) {
         page.locator("#password").fill(password);
         return this;

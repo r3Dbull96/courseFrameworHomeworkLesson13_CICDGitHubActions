@@ -13,13 +13,13 @@ public class LoginPage {
         return this;
     }
 
-    @Step("Ввести имя {0}")
+    @Step("Ввести имя")
     public LoginPage enterName(String name) {
         $(By.id("username")).sendKeys(name);
         return this;
     }
 
-    @Step("Ввести пароль {0}")
+    @Step("Ввести пароль")
     public LoginPage enterPassword(String password) {
         $(By.id("password")).sendKeys(password);
         return this;
